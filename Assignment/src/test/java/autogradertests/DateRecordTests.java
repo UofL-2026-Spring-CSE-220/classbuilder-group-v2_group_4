@@ -43,7 +43,20 @@ public class DateRecordTests {
         DateRecord leap = new DateRecord(29, MonthsEnum.FEBRUARY, 2020);
         assertEquals("02/29/2020", leap.toString());
     }
-
+    @Test
+    @DisplayName("rejects 31st day for 30-day months")
+    public void rejects31stFor30DayMonths() {
+        // April, June, September, and November only have 30 days
+        assertThrows(IllegalArgumentException.class, () -> new DateRecord(31, MonthsEnum.APRIL, 2024));
+        assertThrows(IllegalArgumentException.class, () -> new DateRecord(31, 9, 2024));
+    }
+    @Test
+    @DisplayName("rejects February 29th on non-leap years")
+    public void rejectsFeb29OnNonLeapYear() {
+        // 2023 is not a leap year, so Feb 29th should crash
+        assertThrows(IllegalArgumentException.class, () -> new DateRecord(29, MonthsEnum.FEBRUARY, 2023));
+        assertThrows(IllegalArgumentException.class, () -> new DateRecord(29, 2, 2023));
+    }
     @Test
     @DisplayName("builder produces equivalent DateRecord to constructor")
     public void builderProducesSameAsConstructor() {
