@@ -5,37 +5,70 @@ public record DateRecord(
         int monthInteger,
         int yearInteger
 ) {
+    // 1. COMPACT CONSTRUCTOR (Validation)
     public DateRecord {
         if (!DateValidator.isValidDate(dayInteger, monthInteger, yearInteger)) {
             throw new IllegalArgumentException("Invalid date: " + dayInteger + "/" + monthInteger + "/" + yearInteger);
         }
     }
 
+    // 2. OVERLOADED CONSTRUCTOR (For Enums)
     public DateRecord(int day, MonthsEnum month, int year) {
         this(day, month.getMonthNumber(), year);
     }
 
+    // 3. TOSTRING METHODS
     public String toString() {
         return toString(DateFormatOptionsEnum.MM_DD_YYYY);
+    }
+
+    public String toString(int tabLevel) {
+        return "\t".repeat(tabLevel) + this.toString();
     }
 
     public String toString(DateFormatOptionsEnum format) {
         return switch (format) {
             case DD_MM_YYYY -> String.format("%02d/%02d/%04d", dayInteger, monthInteger, yearInteger);
-            // alot is missing here
+            case MM_DD_YYYY -> String.format("%02d/%02d/%04d", monthInteger, dayInteger, yearInteger);
+            case YYYY_MM_DD -> String.format("%04d/%02d/%02d", yearInteger, monthInteger, dayInteger);
+            case MONTH_DD_YYYY -> {
+                String monthName = MonthsEnum.fromMonthNumber(monthInteger).toString();
+                yield String.format("%s %02d, %04d", monthName, dayInteger, yearInteger);
+            }
         };
     }
 
-    public static void main(String[] args) {
-        DateRecord date1 = new DateRecord(15, 3, 2024);
-        System.out.println(date1); // Default format: MM/DD/YYYY
-        System.out.println(date1.toString(DateFormatOptionsEnum.DD_MM_YYYY)); // Output: 15/03/2024
-        System.out.println(date1.toString(DateFormatOptionsEnum.YYYY_MM_DD)); // Output: 2024/03/15
-        System.out.println(date1.toString(DateFormatOptionsEnum.MONTH_DD_YYYY)); // Output: March 15, 2024
+    // 4. THE BUILDER CLASS
+    // It must be 'static' so you can call 'new DateRecord.Builder()'
+    public static class Builder {
+        private int day;
+        private int month;
+        private int year;
 
-        DateRecord date2 = new DateRecord(29, MonthsEnum.FEBRUARY, 2020);
-        System.out.println(date2); // Output: 02/29/2020
+        public Builder setDay(int day) {
+            this.day = day;
+            return this;
+        }
+
+        public Builder setMonth(int month) {
+            this.month = month;
+            return this;
+        }
+
+        // --- NEW METHOD ADDED HERE ---
+        public Builder setMonth(MonthsEnum month) {
+            this.month = month.getMonthNumber();
+            return this;
+        }
+        // -----------------------------
+
+        public Builder setYear(int year) {
+            this.year = year;
+            return this;
+        }
+
+        public DateRecord build() {
+            return new DateRecord(day, month, year);
+        }
     }
-
-
 }

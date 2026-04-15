@@ -41,13 +41,16 @@ public class Main {
                 .build();
 
         StudentRecord studentRecord = new StudentRecord.Builder()
-            .setStudentInfo(studentInfo)
-            .setStudentID("123456789")
-            .setFatherInfo(fatherInfo)
-            .setMotherInfo(motherInfo)
-            .setEnrollmentDate(enrollmentDate)
-            .build();
+                .setStudentInfo(studentInfo)
+                .setStudentID("123456789")
+                .setFatherInfo(fatherInfo)
+                .setMotherInfo(motherInfo)
+                .setEnrollmentDate(enrollmentDate)
+                .build();
 
         System.out.println(studentRecord);
     }
 }
+
+
+
