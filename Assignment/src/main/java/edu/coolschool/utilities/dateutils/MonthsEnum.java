@@ -1,61 +1,46 @@
 package edu.coolschool.utilities.dateutils;
 
 public enum MonthsEnum {
-    JANUARY(1),
-    FEBRUARY(2),
-    MARCH(3),
-    APRIL(4),
-    MAY(5),
-    JUNE(6),
-    JULY(7),
-    AUGUST(8),
-    SEPTEMBER(9),
-    OCTOBER(10),
-    NOVEMBER(11),
-    DECEMBER(12);
+    JANUARY(1, "January"),
+    FEBRUARY(2, "February"),
+    MARCH(3, "March"),
+    APRIL(4, "April"),
+    MAY(5, "May"),
+    JUNE(6, "June"),
+    JULY(7, "July"),
+    AUGUST(8, "August"),
+    SEPTEMBER(9, "September"),
+    OCTOBER(10, "October"),
+    NOVEMBER(11, "November"),
+    DECEMBER(12, "December");
 
     private final int monthNumber;
+    private final String displayName;
 
-    MonthsEnum(int monthNumber) {
+    MonthsEnum(int monthNumber, String displayName) {
         this.monthNumber = monthNumber;
+        this.displayName = displayName;
     }
 
     public int getMonthNumber() {
         return monthNumber;
     }
 
-    public static MonthsEnum fromMonthNumber(int monthNumber) {
-        for (MonthsEnum month : MonthsEnum.values()) {
-            if (month.getMonthNumber() == monthNumber) {
-                return month;
-            }
-        }
-        throw new IllegalArgumentException("Invalid month number: " + monthNumber);
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public static MonthsEnum fromString(String monthName) {
-        for (MonthsEnum month : MonthsEnum.values()) {
-            if (month.name().equalsIgnoreCase(monthName)) {
-                return month;
+    public static MonthsEnum fromInt(int month) {
+        for (MonthsEnum m : values()) {
+            if (m.monthNumber == month) {
+                return m;
             }
         }
-        throw new IllegalArgumentException("Invalid month name: " + monthName);
+        throw new IllegalArgumentException("Invalid month: " + month);
     }
 
+    @Override
     public String toString() {
-        // Capitalize the first letter and make the rest lowercase
-        String name = this.name();
-        return name.charAt(0) + name.substring(1).toLowerCase();
-    }
-
-    public static void main(String[] args) {
-        // Example usage
-        MonthsEnum month = MonthsEnum.fromMonthNumber(3);
-        System.out.println(month); // Output: March
-
-        month = MonthsEnum.fromString("October");
-        System.out.println(month); // Output: October
-
-        System.out.println(MonthsEnum.JANUARY.getMonthNumber()); // Output: 1
+        return displayName;
     }
 }

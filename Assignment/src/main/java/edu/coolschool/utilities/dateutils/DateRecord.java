@@ -1,66 +1,59 @@
 package edu.coolschool.utilities.dateutils;
 
-public record DateRecord(
-        int dayInteger,
-        int monthInteger,
-        int yearInteger
-) {
-    // 1. COMPACT CONSTRUCTOR (Validation)
+import edu.coolschool.utilities.ErrorStrings;
+
+public record DateRecord(int day, MonthsEnum month, int year) {
+
     public DateRecord {
-        if (!DateValidator.isValidDate(dayInteger, monthInteger, yearInteger)) {
-            throw new IllegalArgumentException("Invalid date: " + dayInteger + "/" + monthInteger + "/" + yearInteger);
+        if (month == null) {
+            throw new IllegalArgumentException(ErrorStrings.INVALID_DATE.getMessage());
+        }
+        if (!DateValidator.isValidDate(day, month, year)) {
+            throw new IllegalArgumentException(ErrorStrings.INVALID_DATE.getMessage());
         }
     }
 
-    // 2. OVERLOADED CONSTRUCTOR (For Enums)
-    public DateRecord(int day, MonthsEnum month, int year) {
-        this(day, month.getMonthNumber(), year);
+    public DateRecord(int day, int month, int year) {
+        this(day, MonthsEnum.fromInt(month), year);
     }
 
-    // 3. TOSTRING METHODS
+    @Override
     public String toString() {
         return toString(DateFormatOptionsEnum.MM_DD_YYYY);
     }
 
-    public String toString(int tabLevel) {
-        return "\t".repeat(tabLevel) + this.toString();
-    }
-
     public String toString(DateFormatOptionsEnum format) {
+        if (format == null) {
+            format = DateFormatOptionsEnum.MM_DD_YYYY;
+        }
+
+        int monthNum = month.getMonthNumber();
+        String mm = String.format("%02d", monthNum);
+        String dd = String.format("%02d", day);
+        String yyyy = String.format("%04d", year);
+
         return switch (format) {
-            case DD_MM_YYYY -> String.format("%02d/%02d/%04d", dayInteger, monthInteger, yearInteger);
-            case MM_DD_YYYY -> String.format("%02d/%02d/%04d", monthInteger, dayInteger, yearInteger);
-            case YYYY_MM_DD -> String.format("%04d/%02d/%02d", yearInteger, monthInteger, dayInteger);
-            case MONTH_DD_YYYY -> {
-                String monthName = MonthsEnum.fromMonthNumber(monthInteger).toString();
-                yield String.format("%s %02d, %04d", monthName, dayInteger, yearInteger);
-            }
+            case DD_MM_YYYY -> dd + "/" + mm + "/" + yyyy;
+            case MM_DD_YYYY -> mm + "/" + dd + "/" + yyyy;
+            case YYYY_MM_DD -> yyyy + "/" + mm + "/" + dd;
+            case MONTH_DD_YYYY -> month.getDisplayName() + " " + dd + ", " + yyyy;
         };
     }
 
-    // 4. THE BUILDER CLASS
-    // It must be 'static' so you can call 'new DateRecord.Builder()'
     public static class Builder {
-        private int day;
-        private int month;
-        private int year;
+        private Integer day;
+        private MonthsEnum month;
+        private Integer year;
 
         public Builder setDay(int day) {
             this.day = day;
             return this;
         }
 
-        public Builder setMonth(int month) {
+        public Builder setMonth(MonthsEnum month) {
             this.month = month;
             return this;
         }
-
-        // --- NEW METHOD ADDED HERE ---
-        public Builder setMonth(MonthsEnum month) {
-            this.month = month.getMonthNumber();
-            return this;
-        }
-        // -----------------------------
 
         public Builder setYear(int year) {
             this.year = year;
@@ -68,6 +61,9 @@ public record DateRecord(
         }
 
         public DateRecord build() {
+            if (day == null || month == null || year == null) {
+                throw new IllegalArgumentException(ErrorStrings.INVALID_DATE.getMessage());
+            }
             return new DateRecord(day, month, year);
         }
     }

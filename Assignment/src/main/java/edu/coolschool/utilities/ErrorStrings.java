@@ -11,6 +11,7 @@ public enum ErrorStrings {
     INVALID_STUDENT_ID("Student ID must be exactly 9 characters long and cannot be null or blank. Please provide a valid student ID."),
     NULL_ENROLLMENT_DATE("Enrollment date cannot be null. Please provide a valid enrollment date."),
     UNKNOWN_COUNTRY("The country provided is not recognized. Please contact support for assistance.");
+
     private final String message;
 
     ErrorStrings(String message) {
@@ -21,6 +22,7 @@ public enum ErrorStrings {
         return message;
     }
 
+    @Override
     public String toString() {
         return message;
     }

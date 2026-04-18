@@ -1,7 +1,6 @@
 package edu.coolschool.utilities;
 
 import edu.coolschool.utilities.dateutils.DateRecord;
-import edu.coolschool.utilities.dateutils.MonthsEnum;
 
 public record PersonInfo(
         String firstName,
@@ -11,9 +10,7 @@ public record PersonInfo(
         CountriesEnum countryOfResidence,
         CountriesEnum countryOfBirth
 ) {
-    /**
-     * Compact Constructor for validation using ErrorStrings Enum.
-     */
+
     public PersonInfo {
         if (firstName == null || firstName.isBlank()) {
             throw new IllegalArgumentException(ErrorStrings.FIRST_NAME_BLANK.getMessage());
@@ -21,14 +18,14 @@ public record PersonInfo(
         if (lastName == null || lastName.isBlank()) {
             throw new IllegalArgumentException(ErrorStrings.LAST_NAME_BLANK.getMessage());
         }
+        if (dateOfBirth == null) {
+            throw new IllegalArgumentException(ErrorStrings.NULL_DATE.getMessage());
+        }
         if (countryOfResidence == null) {
             throw new IllegalArgumentException(ErrorStrings.NULL_COUNTRY.getMessage());
         }
         if (countryOfBirth == null) {
             throw new IllegalArgumentException(ErrorStrings.NULL_COUNTRY_OF_BIRTH.getMessage());
-        }
-        if (dateOfBirth == null) {
-            throw new IllegalArgumentException(ErrorStrings.INVALID_DATE.getMessage());
         }
     }
 
@@ -37,8 +34,8 @@ public record PersonInfo(
         return toString(0);
     }
 
-    public String toString(int tabLevel) {
-        String indent = "\t".repeat(tabLevel);
+    public String toString(int tabCount) {
+        String indent = "\t".repeat(Math.max(0, tabCount));
         StringBuilder sb = new StringBuilder();
 
         sb.append(indent).append("First Name: ").append(firstName).append("\n");
@@ -49,15 +46,12 @@ public record PersonInfo(
 
         sb.append(indent).append("Last Name: ").append(lastName).append("\n");
         sb.append(indent).append("Date of Birth: ").append(dateOfBirth.toString()).append("\n");
-        sb.append(indent).append("Country of Residence: ").append(countryOfResidence).append("\n");
-        sb.append(indent).append("Country of Birth: ").append(countryOfBirth).append("\n");
+        sb.append(indent).append("Country of Residence: ").append(countryOfResidence.getDisplayName()).append("\n");
+        sb.append(indent).append("Country of Birth: ").append(countryOfBirth.getDisplayName()).append("\n");
 
         return sb.toString();
     }
 
-    /**
-     * Static Builder Class to match your Main method usage.
-     */
     public static class Builder {
         private String firstName;
         private String middleName;
@@ -97,23 +91,14 @@ public record PersonInfo(
         }
 
         public PersonInfo build() {
-            return new PersonInfo(firstName, middleName, lastName, dateOfBirth, countryOfResidence, countryOfBirth);
+            return new PersonInfo(
+                    firstName,
+                    middleName,
+                    lastName,
+                    dateOfBirth,
+                    countryOfResidence,
+                    countryOfBirth
+            );
         }
-    }
-
-    public static void main(String[] args) {
-        // Now this code works perfectly!
-        DateRecord dob = new DateRecord(15, MonthsEnum.MARCH, 2024);
-
-        PersonInfo person = new PersonInfo.Builder()
-                .setFirstName("John")
-                .setMiddleName("Q")
-                .setLastName("Public")
-                .setDateOfBirth(dob)
-                .setCountryOfResidence(CountriesEnum.US)
-                .setCountryOfBirth(CountriesEnum.US)
-                .build();
-
-        System.out.println(person.toString());
     }
 }

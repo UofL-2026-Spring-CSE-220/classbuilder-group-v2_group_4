@@ -12,22 +12,13 @@ public record StudentRecord(
         DateRecord enrollmentDate
 ) {
 
-    /**
-     * Compact Constructor: This is where the validation happens.
-     */
     public StudentRecord {
-        // 1. Validate Student ID using ErrorStrings enum
-        if (studentID == null || studentID.isBlank() || studentID.length() != 9) {
-            // .getMessage() converts the Enum object into the actual String message
-            throw new IllegalArgumentException(ErrorStrings.INVALID_STUDENT_ID.getMessage());
-        }
-
-        // 2. Validate Student Info
         if (studentInfo == null) {
             throw new IllegalArgumentException(ErrorStrings.NULL_STUDENT_INFO.getMessage());
         }
-
-        // 3. Validate Enrollment Date
+        if (studentID == null || studentID.isBlank() || studentID.length() != 9) {
+            throw new IllegalArgumentException(ErrorStrings.INVALID_STUDENT_ID.getMessage());
+        }
         if (enrollmentDate == null) {
             throw new IllegalArgumentException(ErrorStrings.NULL_ENROLLMENT_DATE.getMessage());
         }
@@ -38,33 +29,26 @@ public record StudentRecord(
         return toString(0);
     }
 
-    /**
-     * Formats the student record with indentation for better readability.
-     */
-    public String toString(int tabLevel) {
-        String indent = "\t".repeat(tabLevel);
-        String nestedIndent = "\t".repeat(tabLevel + 1);
+    public String toString(int tabCount) {
+        String indent = "\t".repeat(Math.max(0, tabCount));
         StringBuilder sb = new StringBuilder();
 
         sb.append(indent).append("Student ID: ").append(studentID).append("\n");
-        sb.append(nestedIndent).append("Enrollment Date: ").append(enrollmentDate).append("\n");
-
-        // Use the toString(int) methods of the nested objects
-        sb.append(nestedIndent).append("Student Information:\n");
-        sb.append(studentInfo.toString(tabLevel + 2));
+        sb.append(indent).append("\tEnrollment Date: ").append(enrollmentDate.toString()).append("\n");
+        sb.append(indent).append("\tStudent Information:\n");
+        sb.append(studentInfo.toString(tabCount + 2));
 
         if (fatherInfo != null) {
-            sb.append(nestedIndent).append("Father Information:\n");
-            sb.append(fatherInfo.toString(tabLevel + 2));
+            sb.append(indent).append("\tFather Information:\n");
+            sb.append(fatherInfo.toString(tabCount + 2));
         }
 
         if (motherInfo != null) {
-            sb.append(nestedIndent).append("Mother Information:\n");
-            sb.append(motherInfo.toString(tabLevel + 2));
+            sb.append(indent).append("\tMother Information:\n");
+            sb.append(motherInfo.toString(tabCount + 2));
         }
 
         sb.append("\n");
-
         return sb.toString();
     }
 
@@ -101,7 +85,13 @@ public record StudentRecord(
         }
 
         public StudentRecord build() {
-            return new StudentRecord(studentInfo, studentID, fatherInfo, motherInfo, enrollmentDate);
+            return new StudentRecord(
+                    studentInfo,
+                    studentID,
+                    fatherInfo,
+                    motherInfo,
+                    enrollmentDate
+            );
         }
     }
 }
